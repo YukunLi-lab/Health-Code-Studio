@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schemas.tauri.app/config/2/capability",
+  "identifier": "main-capability",
+  "description": "Main capability for HealthCode Studio desktop app",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    "dialog:default",
+    "fs:default",
+    "sql:default",
+    "sql:allow-load",
+    "sql:allow-execute",
+    "sql:allow-select",
+    "sql:allow-close",
+    "os:default"
+  ]
+}

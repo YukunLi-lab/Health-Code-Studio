@@ -1,0 +1,35 @@
+{
+  "name": "healthcode-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered health & wellness app generator - Privacy-first, local-first",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "pnpm --filter @healthcode/web dev",
+    "dev:api": "pnpm --filter @healthcode/api dev",
+    "build": "turbo build",
+    "build:web": "pnpm --filter @healthcode/web build",
+    "build:api": "pnpm --filter @healthcode/api build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "test:e2e": "pnpm --filter @healthcode/web test:e2e",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean && rm -rf node_modules",
+    "docker:up": "cd docker && docker-compose up -d",
+    "docker:down": "cd docker && docker-compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

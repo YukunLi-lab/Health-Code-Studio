@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+  # ==================== HealthCode API ====================
+  api:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    container_name: healthcode-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///data/healthcode.db
+      - OLLAMA_URL=http://ollama:11434
+      - ENV=development
+      - SQL_DEBUG=false
+    volumes:
+      - api-data:/data
+      - ../apps/api:/app:ro
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - healthcode-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ==================== Ollama AI Service ====================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: healthcode-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - healthcode-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # ==================== Optional: Redis for Caching ====================
+  # Uncomment if you want to enable cloud sync
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: healthcode-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - healthcode-network
+  #   restart: unless-stopped
+  #   command: redis-server --appendonly yes
+
+networks:
+  healthcode-network:
+    driver: bridge
+    name: healthcode-network
+
+volumes:
+  api-data:
+    name: healthcode-api-data
+  ollama-data:
+    name: healthcode-ollama-data
+  # redis-data:
+  #   name: healthcode-redis-data
